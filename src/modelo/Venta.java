@@ -35,25 +35,23 @@ public class Venta implements Serializable {
     
     public Venta(String idCliente, String nombreCliente, String emailCliente, ArrayList<Producto> productos, String metodoPago, String referenciaPago) {
 
-        this.folio           = generarFolio();
-        this.idCliente       = idCliente;
-        this.nombreCliente   = nombreCliente;
-        this.emailCliente    = emailCliente;
-        this.productos       = new ArrayList<>(productos);
-        this.metodoPago      = metodoPago;
-        this.referenciaPago  = referenciaPago;
-        this.fecha           = LocalDateTime.now();
-        this.estado          = metodoPago.equals("EFECTIVO") ? Estado.PENDIENTE_PAGO : Estado.PAGO_CONFIRMADO;
+        this.folio = generarFolio();
+        this.idCliente = idCliente;
+        this.nombreCliente= nombreCliente;
+        this.emailCliente = emailCliente;
+        this.productos = new ArrayList<>(productos);
+        this.metodoPago  = metodoPago;
+        this.referenciaPago = referenciaPago;
+        this.fecha = LocalDateTime.now();
+        this.estado = metodoPago.equals("EFECTIVO") ? Estado.PENDIENTE_PAGO : Estado.PAGO_CONFIRMADO;
 
-        // Calcular total con descuentos aplicados
-        this.total = productos.stream()
-                .mapToDouble(Producto::getPrecioEfectivo)
-                .sum();
+        // Calcular total con descuentos 
+        this.total = productos.stream().mapToDouble(Producto::getPrecioEfectivo).sum();
     }
 
     // folio
     private String generarFolio() {
-        return "TM-" + System.currentTimeMillis();
+        return "AF-" + System.currentTimeMillis();
     }
 
     // hilo sguimiento
@@ -68,17 +66,17 @@ public class Venta implements Serializable {
     }
 
     // getters y setters
-    public String              getFolio()           { return folio; }
-    public String              getIdCliente()       { return idCliente; }
-    public String              getNombreCliente()   { return nombreCliente; }
-    public String              getEmailCliente()    { return emailCliente; }
-    public ArrayList<Producto> getProductos()       { return productos; }
-    public double              getTotal()           { return total; }
-    public String              getMetodoPago()      { return metodoPago; }
-    public String              getReferenciaPago()  { return referenciaPago; }
-    public LocalDateTime       getFecha()           { return fecha; }
-    public Estado              getEstado()          { return estado; }
-    public void                setEstado(Estado e)  { this.estado = e; }
+    public String getFolio() { return folio; }
+    public String getIdCliente() { return idCliente; }
+    public String getNombreCliente() { return nombreCliente; }
+    public String getEmailCliente() { return emailCliente; }
+    public ArrayList<Producto> getProductos(){ return productos; }
+    public double getTotal() { return total; }
+    public String getMetodoPago() { return metodoPago; }
+    public String getReferenciaPago() { return referenciaPago; }
+    public LocalDateTime getFecha() { return fecha; }
+    public Estado getEstado() { return estado; }
+    public void setEstado(Estado e) { this.estado = e; }
 
     // fecha
     public String getFechaFormateada() {

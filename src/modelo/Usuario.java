@@ -33,6 +33,6 @@ public abstract class Usuario implements Serializable {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public boolean isEsAdministrador() { return esAdmin; }
-    public void setEsAdministrador(boolean esAdmin) { this.esAdmin = esAdmin; }
+    public boolean esAdmin() { return esAdmin; }
+    public void setAdmin(boolean esAdmin) { this.esAdmin = esAdmin; }
 }

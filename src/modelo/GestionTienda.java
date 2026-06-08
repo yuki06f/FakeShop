@@ -18,8 +18,8 @@ public class GestionTienda {
 
         // Admin por defecto si no hay usuarios
         if (listaUsuarios.isEmpty()) {
-            listaUsuarios.add(new Cliente("1", "Admin", "admin@tiendamax.com", "ola123", "tienda"));
-            listaUsuarios.get(0).setEsAdministrador(true);
+            listaUsuarios.add(new Cliente("1", "Admin", "admin@gmail.com", "ola123", "tienda"));
+            listaUsuarios.get(0).setAdmin(true);
             guardarUsuarios();
         }
     }

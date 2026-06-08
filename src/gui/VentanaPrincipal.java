@@ -13,37 +13,44 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import modelo.GestionVentas;
 
 public class VentanaPrincipal extends JFrame {
 
-    private final Color COLOR_MORADO_OSCURO     = new Color(40, 15, 45);
-    private final Color COLOR_MORADO_BASE       = new Color(65, 20, 60);
-    private final Color COLOR_NARANJA           = new Color(225, 120, 80);
-    private final Color COLOR_FONDO_APP         = new Color(248, 246, 250);
-    private final Color COLOR_BLANCO            = Color.WHITE;
-    private final Color COLOR_TEXTO             = new Color(50, 20, 50);
-    private final Color COLOR_TEXTO_SECUNDARIO  = new Color(120, 110, 130);
+    private final Color COLOR_MORADO_OSCURO = new Color(40, 15, 45);
+    private final Color COLOR_MORADO_BASE = new Color(65, 20, 60);
+    private final Color COLOR_NARANJA = new Color(225, 120, 80);
+    private final Color COLOR_FONDO_APP = new Color(248, 246, 250);
+    private final Color COLOR_BLANCO = Color.WHITE;
+    private final Color COLOR_TEXTO = new Color(50, 20, 50);
+    private final Color COLOR_TEXTO_SECUNDARIO = new Color(120, 110, 130);
 
     private GestionTienda gestion;
     private Usuario       usuarioActual = null;   // null = invitado
 
-    private JLabel    lblLoginRef;      // botón "Mi Cuenta" / nombre usuario
-    private JLabel    lblCarritoRef;    // botón "Carrito (N)"
-    private JTextField txtBuscar;       // buscador en tiempo real
-    private JPanel    gridOfertas;      // grid de "Ofertas Flash"
-    private JPanel    gridVendidos;     // grid de "Lo más vendido"
+    private JLabel    lblLoginRef;      // botón cuenta con nombre de usuario
+    private JLabel    lblCarritoRef;    // botón carrito
+    private JTextField txtBuscar;       // buscador con hilo
+    private JPanel    gridOfertas;      // grid ofertas
+    private JPanel    gridVendidos;     // grid mas vendido
     private JLabel    lblBannerTitulo;  // título del banner (carrusel)
     private JLabel    lblBannerSub;     // subtítulo del banner
     private int       carruselIdx = 0;  // índice del hilo del carrusel
+    
+    private GestionVentas gestionV;
+    private String categoriaActual = "Todos"; // Categoría por defecto
 
-    public VentanaPrincipal(GestionTienda gestion) {
+    public VentanaPrincipal(GestionTienda gestion, GestionVentas gestionV) {
         this.gestion = gestion;
-        setTitle("TiendaMax - Inicio");
+        this.gestionV = gestionV;
+        setTitle("Amazonasxd");
         setSize(1200, 800);
         setMinimumSize(new Dimension(900, 600));   // responsivo mínimo
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(COLOR_FONDO_APP);
+        
+        setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/src/img/carro.ico")));
 
         iniciarComponentes();
         iniciarCarrusel();   // hilo en segundo plano
@@ -53,30 +60,57 @@ public class VentanaPrincipal extends JFrame {
         setLayout(new BorderLayout());
         add(crearCabecera(), BorderLayout.NORTH);
 
-        JPanel panelCentral = new JPanel();
-        panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
+        add(crearSidebarCategorias(), BorderLayout.WEST);
+        // grid layout
+        JPanel panelCentral = new JPanel(new GridBagLayout());
         panelCentral.setBackground(COLOR_FONDO_APP);
-        panelCentral.setBorder(new EmptyBorder(20, 40, 20, 40));
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0; // expade horzontal
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(20, 40, 20, 40); // margen de arriba y lateral
 
-        panelCentral.add(crearBannerPromocional());
-        panelCentral.add(Box.createVerticalStrut(30));
-        panelCentral.add(crearSeccionConGrid("Ofertas Flash",  true));
-        panelCentral.add(Box.createVerticalStrut(30));
-        panelCentral.add(crearSeccionConGrid("Lo más vendido", false));
+        // fila 0 carrusel
+        panelCentral.add(crearBannerPromocional(), gbc);
 
-        JScrollPane scroll = new JScrollPane(panelCentral);
+        // fila 1 ofertas
+        gbc.gridy = 1;
+        gbc.insets = new Insets(10, 40, 20, 40);
+        panelCentral.add(crearSeccionConGrid("Ofertas", true), gbc);
+
+        //fila 2 popular
+        gbc.gridy = 2;
+        gbc.weighty = 1.0; // crece arriba
+        gbc.fill = GridBagConstraints.BOTH;
+        panelCentral.add(crearSeccionConGrid("Lo + vendido", false), gbc);
+
+        // para poder respetar alturas
+        JPanel panelWrapper = new JPanel(new BorderLayout());
+        panelWrapper.setBackground(COLOR_FONDO_APP);
+        panelWrapper.add(panelCentral, BorderLayout.NORTH);
+
+        // scroll 
+        JScrollPane scroll = new JScrollPane(panelWrapper);
         scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.getVerticalScrollBar().setUnitIncrement(20); // Scroll fluido
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        // limpiar pixeles viejitos
+        scroll.getViewport().setBackground(COLOR_FONDO_APP);
+        scroll.getViewport().setOpaque(true);
+
         add(scroll, BorderLayout.CENTER);
     }
-
+    
     private JPanel crearCabecera() {
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(COLOR_MORADO_OSCURO);
         header.setBorder(new EmptyBorder(15, 40, 15, 40));
 
         // Logo
-        JLabel lblLogo = new JLabel("TiendaMax");
+        JLabel lblLogo = new JLabel("Amazonas xd");
         lblLogo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblLogo.setForeground(COLOR_BLANCO);
 
@@ -90,8 +124,9 @@ public class VentanaPrincipal extends JFrame {
         txtBuscar.setForeground(COLOR_TEXTO_SECUNDARIO);
         txtBuscar.setBorder(new LineBorder(COLOR_MORADO_OSCURO, 2));
 
-        // Placeholder y búsqueda en tiempo real
+        // Placeholder y búsqueda hilo
         txtBuscar.addFocusListener(new FocusAdapter() {
+            
             public void focusGained(FocusEvent e) {
                 if (txtBuscar.getText().trim().equals("Buscar productos...")) {
                     txtBuscar.setText("");
@@ -124,7 +159,7 @@ public class VentanaPrincipal extends JFrame {
         panelBuscador.add(txtBuscar);
         panelBuscador.add(btnBuscar);
 
-        // Botones derecha — guardamos referencias para actualizarlos
+       
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 25, 5));
         panelBotones.setOpaque(false);
 
@@ -133,7 +168,7 @@ public class VentanaPrincipal extends JFrame {
         lblLoginRef.setForeground(COLOR_BLANCO);
         lblLoginRef.setCursor(new Cursor(Cursor.HAND_CURSOR));
         lblLoginRef.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e)  { accionMiCuenta(); }
+            public void mouseClicked(MouseEvent e)  { miCuenta(); }
             public void mouseEntered(MouseEvent e)  { lblLoginRef.setForeground(new Color(255, 200, 120)); }
             public void mouseExited(MouseEvent e)   { lblLoginRef.setForeground(COLOR_BLANCO); }
         });
@@ -143,7 +178,7 @@ public class VentanaPrincipal extends JFrame {
         lblCarritoRef.setForeground(COLOR_BLANCO);
         lblCarritoRef.setCursor(new Cursor(Cursor.HAND_CURSOR));
         lblCarritoRef.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e)  { accionCarrito(); }
+            public void mouseClicked(MouseEvent e)  { verCarrito(); }
             public void mouseEntered(MouseEvent e)  { lblCarritoRef.setForeground(new Color(255, 200, 120)); }
             public void mouseExited(MouseEvent e)   { lblCarritoRef.setForeground(COLOR_BLANCO); }
         });
@@ -157,11 +192,58 @@ public class VentanaPrincipal extends JFrame {
 
         return header;
     }
+    
+    private JPanel crearSidebarCategorias() {
+        // 1. Panel principal de la barra lateral
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setBackground(COLOR_BLANCO); // Fondo blanco limpio
+        sidebar.setPreferredSize(new Dimension(200, 0)); // Ancho fijo de 200px
+        sidebar.setBorder(new EmptyBorder(30, 25, 20, 20)); // Márgenes
+
+        // 2. Título de la sección
+        JLabel titulo = new JLabel("Categorías");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titulo.setForeground(COLOR_MORADO_OSCURO);
+        sidebar.add(titulo);
+        sidebar.add(Box.createVerticalStrut(20)); // Espacio
+
+        // 3. Lista de categorías (Ajusta los nombres a los que uses en tu clase Producto)
+        String[] categorias = {"Todos", "Electrónica", "Ropa", "Hogar", "Deportes", "Libros"};
+
+        for (String cat : categorias) {
+            JLabel lblCat = new JLabel(cat);
+            lblCat.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+            lblCat.setForeground(COLOR_TEXTO_SECUNDARIO);
+            lblCat.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            lblCat.setBorder(new EmptyBorder(8, 0, 8, 0));
+
+            // Efecto Hover y Clic
+            lblCat.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    categoriaActual = cat; // Actualizamos la variable global
+                    filtrarProductos();    // Llamamos a tu filtro inteligente
+                }
+                public void mouseEntered(MouseEvent e) {
+                    lblCat.setForeground(COLOR_NARANJA);
+                }
+                public void mouseExited(MouseEvent e) {
+                    // Solo regresa a gris si no es la categoría activa
+                    lblCat.setForeground(COLOR_TEXTO_SECUNDARIO);
+                }
+            });
+
+            sidebar.add(lblCat);
+            sidebar.add(Box.createVerticalStrut(5));
+        }
+
+        return sidebar;
+    }
        
     //carrusel
     private static final String[][] BANNERS = {
-        {"?Ofertas del día",         "Hasta 50% OFF en productos seleccionados — solo hoy"},
-        {"Envío gratis",            "En compras mayores a $500 este fin de semana"},
+        {"?Ofertas del día",         "Hasta 50% OFF en productos seleccionados SOLO HOY"},
+        {"Envío gratis",            "En compras mayores a $1000 este fin de semana"},
         {"Bienvenida",              "Regístrate y obtén descuento exclusivo en tu primera compra"}
     };
 
@@ -172,18 +254,19 @@ public class VentanaPrincipal extends JFrame {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(
-                    0, 0, COLOR_MORADO_BASE,
-                    getWidth(), 0, COLOR_NARANJA
-                );
+                GradientPaint gp = new GradientPaint(0, 0, COLOR_MORADO_BASE,getWidth(), 0, COLOR_NARANJA);
                 g2.setPaint(gp);
                 g2.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 25, 25));
                 g2.dispose();
             }
         };
         banner.setLayout(new BoxLayout(banner, BoxLayout.Y_AXIS));
-        banner.setOpaque(false);
-        banner.setPreferredSize(new Dimension(0, 220));
+       banner.setOpaque(false);
+        banner.setPreferredSize(new Dimension(800, 220));
+        
+        //evitar que el carrusel desaparezca por falta de dimensiones
+        banner.setMinimumSize(new Dimension(800, 220)); 
+        
         banner.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
         banner.setBorder(new EmptyBorder(40, 50, 40, 50));
 
@@ -195,7 +278,7 @@ public class VentanaPrincipal extends JFrame {
         lblBannerSub.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblBannerSub.setForeground(new Color(255, 255, 255, 210));
 
-        // Puntos indicadores
+        // dotsitos
         JPanel puntos = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         puntos.setOpaque(false);
         puntos.setName("puntosBanner");
@@ -224,7 +307,7 @@ public class VentanaPrincipal extends JFrame {
         lblTitulo.setForeground(COLOR_TEXTO);
         seccion.add(lblTitulo, BorderLayout.NORTH);
 
-        JPanel grid = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        JPanel grid = new JPanel(new WrapLayout(FlowLayout.LEFT, 20, 20));
         grid.setOpaque(false);
 
         // Guardar referencia según la sección
@@ -234,12 +317,10 @@ public class VentanaPrincipal extends JFrame {
             gridVendidos = grid;
         }
 
-        // Poblar con datos reales
+        // mostrar los productos
         List<Producto> productos = gestion.getListaProductos();
         if (soloOfertas) {
-            productos = productos.stream()
-                .filter(Producto::isTieneDescuento)
-                .collect(Collectors.toList());
+            productos = productos.stream().filter(Producto::isTieneDescuento) .collect(Collectors.toList());
         }
 
         if (productos.isEmpty()) {
@@ -265,13 +346,13 @@ public class VentanaPrincipal extends JFrame {
         ));
         tarjeta.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Área de imagen / ícono
+        // para imagen
         JPanel imgPlaceholder = new JPanel(new BorderLayout());
         imgPlaceholder.setBackground(new Color(250, 245, 252));
         imgPlaceholder.setPreferredSize(new Dimension(170, 140));
         imgPlaceholder.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
 
-        // Badge de descuento (solo si tiene)
+        // etiqueta descuento
         if (p.isTieneDescuento()) {
             JLabel badge = new JLabel(" -" + (int)(p.getPorcentajeDescuento() * 100) + "% ");
             badge.setOpaque(true);
@@ -296,17 +377,13 @@ public class VentanaPrincipal extends JFrame {
         lblPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Precio tachado si tiene descuento
-        JLabel lblOriginal = new JLabel(p.isTieneDescuento()
-            ? "<html><strike>$" + String.format("%.2f", p.getPrecio()) + "</strike></html>"
-            : " ");
+        JLabel lblOriginal = new JLabel(p.isTieneDescuento()? "<html><strike>$" + String.format("%.2f", p.getPrecio()) + "</strike></html>": " ");
         lblOriginal.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblOriginal.setForeground(COLOR_TEXTO_SECUNDARIO);
         lblOriginal.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Stock
-        JLabel lblStock = new JLabel(p.getStock() > 0
-            ? "En stock (" + p.getStock() + ")"
-            : "Agotado");
+        JLabel lblStock = new JLabel(p.getStock() > 0? "En stock (" + p.getStock() + ")": "Agotado");
         lblStock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblStock.setForeground(p.getStock() > 0
             ? new Color(40, 140, 70) : new Color(190, 50, 50));
@@ -321,7 +398,7 @@ public class VentanaPrincipal extends JFrame {
         tarjeta.add(Box.createVerticalStrut(4));
         tarjeta.add(lblStock);
 
-        // Hover: borde naranja (igual que tu compañero)
+        // hacer hover y mostrar borde naranja
         tarjeta.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 tarjeta.setBorder(BorderFactory.createCompoundBorder(
@@ -335,7 +412,7 @@ public class VentanaPrincipal extends JFrame {
             }
             // Clic: abrir detalle o pedir login
             public void mouseClicked(MouseEvent e) {
-                accionVerProducto(p);
+                verProducto(p);
             }
         });
 
@@ -391,14 +468,21 @@ public class VentanaPrincipal extends JFrame {
 
         List<Producto> todos = gestion.getListaProductos();
 
-        List<Producto> ofertas = todos.stream()
+        // 1. PRIMER FILTRO: Por Categoría (La idea de Hector)
+        List<Producto> filtradosPorCat = todos.stream()
+            .filter(p -> categoriaActual.equals("Todos") || p.getCategoria().equalsIgnoreCase(categoriaActual))
+            .collect(Collectors.toList());
+
+        // 2. SEGUNDO FILTRO: Separar Ofertas y aplicar texto de búsqueda
+        List<Producto> ofertas = filtradosPorCat.stream()
             .filter(Producto::isTieneDescuento)
             .filter(p -> !buscando
                 || p.getNombre().toLowerCase().contains(query)
                 || p.getCategoria().toLowerCase().contains(query))
             .collect(Collectors.toList());
 
-        List<Producto> todos2 = todos.stream()
+        // 3. TERCER FILTRO: Lo más vendido + búsqueda
+        List<Producto> todos2 = filtradosPorCat.stream()
             .filter(p -> !buscando
                 || p.getNombre().toLowerCase().contains(query)
                 || p.getCategoria().toLowerCase().contains(query))
@@ -425,87 +509,153 @@ public class VentanaPrincipal extends JFrame {
         grid.repaint();
     }
 
-    /** Llamado desde autenticacion.java tras login exitoso */
+    //se usa en autenticacion tras loggear
     public void setUsuario(Usuario u) {
         this.usuarioActual = u;
+        
         if (u != null) {
-            lblLoginRef.setText("👤 " + u.getNombre());
+            if (u.esAdmin()) {
+                this.setVisible(false); 
+                
+                // 3. Abrimos directamente el Panel de Administrador
+                new PanelAdmin(gestion, gestionV).setVisible(true);
+            } else {
+                // Es un cliente normal, solo actualizamos su nombre en la cabecera
+                lblLoginRef.setText(u.getNombre());
+            }
         } else {
-            lblLoginRef.setText("👤 Mi Cuenta");
+            lblLoginRef.setText("Mi Cuenta");
             lblCarritoRef.setText("Carrito (0)");
         }
     }
 
-    /** Actualiza el contador del carrito en la barra */
+    //actualizar contador del carrito
     public void actualizarContadorCarrito() {
         if (usuarioActual instanceof Cliente) {
             int n = ((Cliente) usuarioActual).getCarrito().size();
-            lblCarritoRef.setText("🛒 Carrito (" + n + ")");
+            lblCarritoRef.setText("Carrito (" + n + ")");
         }
     }
 
-    private void accionMiCuenta() {
+    private void miCuenta() {
         if (usuarioActual == null) {
             // Abrir ventana de autenticación
             autenticacion auth = new autenticacion(gestion, this);
             auth.setVisible(true);
         } else {
-            String[] opciones = {"Mi perfil", "Mis pedidos", "Cerrar sesión"};
-            int r = JOptionPane.showOptionDialog(this,
-                "Bienvenido, " + usuarioActual.getNombre(),
-                "Mi cuenta",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null, opciones, opciones[0]);
+            
+            if (usuarioActual.esAdmin()) {
+                // Admin ve su propio menú
+                String[] opciones = {"Panel de administración", "Cerrar sesión"};
+                int r = JOptionPane.showOptionDialog(this,
+                    "Bienvenido, " + usuarioActual.getNombre() + " (Admin)",
+                    "Mi cuenta", JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+                if (r == 0) {
+                    new PanelAdmin(gestion, gestionV).setVisible(true);
+                } else if (r == 1) {
+                    setUsuario(null);
+                }
+            } else{
+                String[] opciones = {"Mi perfil", "Mis pedidos", "Cerrar sesión"};
+                int r = JOptionPane.showOptionDialog(this, "Bienvenido, " + usuarioActual.getNombre(),
+                    "Mi cuenta",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null, opciones, opciones[0]);
 
-            if (r == 0) {
-                // TODO: new PerfilDialog(this, usuarioActual, gestion).setVisible(true);
-                JOptionPane.showMessageDialog(this, "PerfilDialog — próximamente");
-            } else if (r == 1) {
-                // TODO: new HistorialDialog(this, usuarioActual).setVisible(true);
-                JOptionPane.showMessageDialog(this, "HistorialDialog — próximamente");
-            } else if (r == 2) {
-                setUsuario(null);
+                if (r == 0 && !usuarioActual.esAdmin()) {
+                    new PerfilDialog(this, (Cliente) usuarioActual, gestion).setVisible(true);
+
+                    lblLoginRef.setText(usuarioActual.getNombre());
+
+                } else if (r == 1 && !usuarioActual.esAdmin()) {
+                    new HistorialDialog(this, (Cliente) usuarioActual, gestionV).setVisible(true);
+
+                } else if (r == 2) {
+                    setUsuario(null);
+                }
             }
+            
         }
     }
 
-    private void accionCarrito() {
+    private void verCarrito() {
         if (usuarioActual == null) {
             int r = JOptionPane.showConfirmDialog(this,
-                "Necesitas iniciar sesión para ver tu carrito.\n¿Deseas ingresar?",
-                "Inicia sesión",
-                JOptionPane.YES_NO_OPTION);
-            if (r == JOptionPane.YES_OPTION) accionMiCuenta();
+                "Necesitas iniciar sesión para ver tu carrito, ¿deseas ingresar?",
+                "Inicia sesión", JOptionPane.YES_NO_OPTION);
+            if (r == JOptionPane.YES_OPTION) miCuenta();
+        } else if (!(usuarioActual instanceof Cliente)) {
+            JOptionPane.showMessageDialog(this, "Solo clientes pueden usar el carrito");
         } else {
-            // TODO: new CarritoDialog(this, (Cliente) usuarioActual, gestion).setVisible(true);
-            JOptionPane.showMessageDialog(this, "CarritoDialog — próximamente");
+            CarritoDialog carrito = new CarritoDialog(this, (Cliente) usuarioActual, gestion, gestionV);
+            carrito.setVisible(true);
+            actualizarContadorCarrito(); 
         }
     }
 
-    private void accionVerProducto(Producto p) {
+    private void verProducto(Producto p) {
         if (usuarioActual == null) {
-            // Invitado: puede ver detalle pero no comprar
             int r = JOptionPane.showOptionDialog(this,
                 p.getNombre() + "\nPrecio: $" + String.format("%.2f", p.getPrecioEfectivo())
                 + "\nStock: " + p.getStock()
                 + "\n\nInicia sesión para agregar al carrito.",
                 "Detalle del producto",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                null,
-                new String[]{"Iniciar sesión", "Cerrar"},
-                "Cerrar");
-            if (r == 0) accionMiCuenta();
-        } else {
-            // TODO: new ProductoDetalleDialog(this, p, (Cliente) usuarioActual, gestion).setVisible(true);
-            // Por ahora agrega directo al carrito como demo
-            if (usuarioActual instanceof Cliente) {
-                ((Cliente) usuarioActual).agregarAlCarrito(p);
-                actualizarContadorCarrito();
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+                null, new String[]{"Iniciar sesión", "Cerrar"}, "Cerrar");
+            if (r == 0) miCuenta();
+        } else if (usuarioActual instanceof Cliente) {
+            Cliente cliente = (Cliente) usuarioActual;
+            if (p.getStock() <= 0) {
                 JOptionPane.showMessageDialog(this,
-                    "\"" + p.getNombre() + "\" agregado al carrito ✔",
-                    "Carrito", JOptionPane.INFORMATION_MESSAGE);
+                    "Este producto está agotado.", "Sin stock",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            cliente.agregarAlCarrito(p);
+            actualizarContadorCarrito();
+            // Mostrar snack pequeño sin bloquear
+            JOptionPane.showMessageDialog(this, "\"" + p.getNombre() + "\" agregado al carrito","Carrito", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
+    //wrap con grid y box
+    static class WrapLayout extends FlowLayout {
+        public WrapLayout(int align, int hgap, int vgap) {
+            super(align, hgap, vgap);
+        }
+        @Override
+        public Dimension preferredLayoutSize(Container target) {
+            return layoutSize(target, true);
+        }
+        @Override
+        public Dimension minimumLayoutSize(Container target) {
+            return layoutSize(target, false);
+        }
+        private Dimension layoutSize(Container target, boolean preferred) {
+            synchronized (target.getTreeLock()) {
+                int targetWidth = target.getSize().width;
+                if (targetWidth == 0) targetWidth = Integer.MAX_VALUE;
+                int hgap = getHgap(), vgap = getVgap();
+                Insets insets = target.getInsets();
+                int maxWidth = targetWidth - insets.left - insets.right - hgap * 2;
+                int x = 0, y = insets.top + vgap, rowH = 0;
+                for (Component m : target.getComponents()) {
+                    if (m.isVisible()) {
+                        Dimension d = preferred ? m.getPreferredSize() : m.getMinimumSize();
+                        if (x == 0 || x + d.width <= maxWidth) {
+                            x += d.width + hgap;
+                        } else {
+                            y += rowH + vgap;
+                            x = d.width + hgap;
+                            rowH = 0;
+                        }
+                        rowH = Math.max(rowH, d.height);
+                    }
+                }
+                y += rowH + vgap + insets.bottom;
+                return new Dimension(targetWidth, y);
             }
         }
     }

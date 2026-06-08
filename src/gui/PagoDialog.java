@@ -16,7 +16,6 @@ import java.awt.geom.RoundRectangle2D;
 
 public class PagoDialog extends JDialog {
 
-    // ─── Colores ──────────────────────────────────────────────────
     private final Color COLOR_MORADO_OSCURO = new Color(40, 15, 45);
     private final Color COLOR_MORADO_BASE   = new Color(65, 20, 60);
     private final Color COLOR_NARANJA       = new Color(225, 120, 80);
@@ -26,7 +25,6 @@ public class PagoDialog extends JDialog {
     private final Color COLOR_GRIS          = new Color(120, 110, 130);
     private final Color COLOR_VERDE         = new Color(30, 140, 70);
 
-    // ─── Estado ───────────────────────────────────────────────────
     private Cliente          cliente;
     private GestionTienda    gestion;
     private GestionVentas    gestionVentas;
@@ -41,20 +39,17 @@ public class PagoDialog extends JDialog {
     private JTextField  txtExpiracion;
     private JLabel      lblResumenTotal;
 
-    private static final String PASO_METODO    = "metodo";
-    private static final String PASO_DATOS     = "datos";
+    private static final String PASO_METODO = "metodo";
+    private static final String PASO_DATOS = "datos";
     private static final String PASO_CONFIRMAR = "confirmar";
-    private static final String PASO_EXITO     = "exito";
+    private static final String PASO_EXITO = "exito";
 
-    // ─── Constructor ──────────────────────────────────────────────
-    public PagoDialog(Frame parent, Cliente cliente,
-                      GestionTienda gestion, GestionVentas gestionVentas,
-                      VentanaPrincipal ventana) {
+    public PagoDialog(Frame parent, Cliente cliente, GestionTienda gestion, GestionVentas gestionVentas, VentanaPrincipal ventana) {
         super(parent, "Proceso de pago", true);
-        this.cliente       = cliente;
-        this.gestion       = gestion;
+        this.cliente  = cliente;
+        this.gestion  = gestion;
         this.gestionVentas = gestionVentas;
-        this.ventana       = ventana;
+        this.ventana = ventana;
 
         setSize(500, 580);
         setResizable(false);
@@ -63,7 +58,6 @@ public class PagoDialog extends JDialog {
         construirUI();
     }
 
-    // ─── UI principal ─────────────────────────────────────────────
     private void construirUI() {
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(COLOR_FONDO);
@@ -88,7 +82,7 @@ public class PagoDialog extends JDialog {
         h.setBackground(COLOR_MORADO_OSCURO);
         h.setBorder(new EmptyBorder(16, 24, 16, 24));
 
-        JLabel titulo = new JLabel("💳  Proceso de pago");
+        JLabel titulo = new JLabel("Proceso de pago");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
         titulo.setForeground(COLOR_BLANCO);
 
@@ -103,16 +97,14 @@ public class PagoDialog extends JDialog {
         return h;
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  PASO 1 — Elegir método de pago
-    // ════════════════════════════════════════════════════════════════
+    //elegir metodo de pago
     private JPanel crearPasoMetodo() {
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBackground(COLOR_FONDO);
         p.setBorder(new EmptyBorder(30, 40, 30, 40));
 
-        JLabel lbl = new JLabel("¿Cómo quieres pagar?");
+        JLabel lbl = new JLabel("Elige tu método de pago: ");
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lbl.setForeground(COLOR_TEXTO);
         lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -124,20 +116,20 @@ public class PagoDialog extends JDialog {
 
         // Opción OXXO / Efectivo
         JPanel cardEfectivo = crearOpcionPago(
-            "oxxo", "💵  Pago en efectivo (OXXO)",
+            "oxxo", "Pago en efectivo (OXXO)",
             "Genera una referencia de 12 dígitos para pagar en caja");
         p.add(cardEfectivo);
         p.add(Box.createVerticalStrut(16));
 
         // Opción Tarjeta
         JPanel cardTarjeta = crearOpcionPago(
-            "tarjeta", "💳  Tarjeta de débito / crédito",
+            "tarjeta", "Tarjeta de débito / crédito",
             "Ingresa los datos de tu tarjeta de forma segura");
         p.add(cardTarjeta);
         p.add(Box.createVerticalGlue());
 
         // Botón siguiente
-        JButton btnSig = crearBotonGradiente("Continuar →");
+        JButton btnSig = crearBotonGradiente("Continuar");
         btnSig.setAlignmentX(Component.LEFT_ALIGNMENT);
         btnSig.addActionListener(e -> {
             String sel = grupoMetodo.getSelection() != null
@@ -223,9 +215,7 @@ public class PagoDialog extends JDialog {
         return card;
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  PASO 2 — Datos de tarjeta (solo si eligió tarjeta)
-    // ════════════════════════════════════════════════════════════════
+    //si eligio tarjeta
     private JPanel crearPasoDatos() {
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -328,11 +318,9 @@ public class PagoDialog extends JDialog {
             error("CVV inválido."); return false; }
         return true;
     }
-
-    // ════════════════════════════════════════════════════════════════
-    //  PASO 3 — Resumen y confirmación
-    // ════════════════════════════════════════════════════════════════
-    private JPanel panelResumen; // lo llenamos en actualizarResumen()
+    
+    //confirmacion
+    private JPanel panelResumen; // actualizarResumen()
 
     private JPanel crearPasoConfirmar() {
         JPanel p = new JPanel(new BorderLayout());
@@ -350,20 +338,18 @@ public class PagoDialog extends JDialog {
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         botones.setOpaque(false);
 
-        JButton btnAtras = new JButton("← Atrás");
+        JButton btnAtras = new JButton("Atrás");
         btnAtras.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         btnAtras.setForeground(COLOR_GRIS);
         btnAtras.setBorderPainted(false);
         btnAtras.setContentAreaFilled(false);
         btnAtras.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnAtras.addActionListener(e -> {
-            String sel = grupoMetodo.getSelection() != null
-                ? grupoMetodo.getSelection().getActionCommand() : "oxxo";
-            pasos.show(panelContenido,
-                sel.equals("tarjeta") ? PASO_DATOS : PASO_METODO);
+            String sel = grupoMetodo.getSelection() != null ? grupoMetodo.getSelection().getActionCommand() : "oxxo";
+            pasos.show(panelContenido, sel.equals("tarjeta") ? PASO_DATOS : PASO_METODO);
         });
 
-        JButton btnConfirmar = crearBotonGradiente("✔  Confirmar compra");
+        JButton btnConfirmar = crearBotonGradiente("Confirmar compra");
         btnConfirmar.addActionListener(e -> procesarCompra());
 
         botones.add(btnAtras);
@@ -408,8 +394,7 @@ public class PagoDialog extends JDialog {
         panelResumen.add(Box.createVerticalStrut(10));
 
         // Total
-        double total = cliente.getCarrito().stream()
-            .mapToDouble(modelo.Producto::getPrecioEfectivo).sum();
+        double total = cliente.getCarrito().stream().mapToDouble(modelo.Producto::getPrecioEfectivo).sum();
         JPanel filaTot = new JPanel(new BorderLayout());
         filaTot.setOpaque(false);
         filaTot.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
@@ -424,8 +409,7 @@ public class PagoDialog extends JDialog {
         panelResumen.add(Box.createVerticalStrut(16));
 
         // Método
-        JLabel lMet = new JLabel("Método: " + (metodo.equals("EFECTIVO")
-            ? "💵 Efectivo (OXXO)" : "💳 Tarjeta"));
+        JLabel lMet = new JLabel("Método: " + (metodo.equals("EFECTIVO") ? "Efectivo (OXXO)" : "Tarjeta"));
         lMet.setFont(new Font("Segoe UI", Font.BOLD, 13));
         lMet.setForeground(COLOR_GRIS);
         lMet.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -444,9 +428,7 @@ public class PagoDialog extends JDialog {
         panelResumen.repaint();
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  PASO 4 — Éxito
-    // ════════════════════════════════════════════════════════════════
+    //exitooso
     private JLabel lblFolio;
     private JLabel lblRefPago;
 
@@ -456,11 +438,11 @@ public class PagoDialog extends JDialog {
         p.setBackground(COLOR_FONDO);
         p.setBorder(new EmptyBorder(40, 50, 40, 50));
 
-        JLabel ico = new JLabel("✅", SwingConstants.CENTER);
+        JLabel ico = new JLabel("", SwingConstants.CENTER);
         ico.setFont(new Font("Segoe UI", Font.PLAIN, 56));
         ico.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel titulo = new JLabel("¡Compra realizada!");
+        JLabel titulo = new JLabel("Compra realizada correctamente");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titulo.setForeground(COLOR_VERDE);
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -508,9 +490,7 @@ public class PagoDialog extends JDialog {
         return p;
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  PROCESAR COMPRA
-    // ════════════════════════════════════════════════════════════════
+    //procesar copra
     private void procesarCompra() {
         String metodo = grupoMetodo.getSelection().getActionCommand()
             .equals("tarjeta") ? "TARJETA" : "EFECTIVO";
@@ -536,14 +516,14 @@ public class PagoDialog extends JDialog {
         // Registrar la venta en el modelo
         Venta venta = gestionVentas.registrarVenta(cliente, metodo, referencia);
 
-        // Guardar cambios de stock
+        // Guardar cambios de stock //excepcion
         gestion.guardarProductos();
 
         // Limpiar el carrito
         cliente.limpiarCarrito();
         gestion.guardarUsuarios();
 
-        // Mostrar pantalla de éxito
+        // Mostrar pantalla de confrmacion
         lblFolio.setText("Folio: " + venta.getFolio());
         lblRefPago.setText("<html><center>" + mensajePago + "</center></html>");
         pasos.show(panelContenido, PASO_EXITO);
@@ -555,7 +535,6 @@ public class PagoDialog extends JDialog {
         return String.valueOf(r);
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────
     private JButton crearBotonGradiente(String texto) {
         JButton btn = new JButton(texto) {
             @Override protected void paintComponent(Graphics g) {

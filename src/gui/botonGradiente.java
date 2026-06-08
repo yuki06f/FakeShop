@@ -22,7 +22,7 @@ public class botonGradiente extends JButton {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        // Degradado de morado a naranja (Ajusta los RGB si quieres)
+        // Degradado de morado a naranja 
         GradientPaint gp = new GradientPaint(
             0, 0, new Color(110, 30, 90), 
             getWidth(), 0, new Color(225, 100, 60)

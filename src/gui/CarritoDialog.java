@@ -109,7 +109,7 @@ public class CarritoDialog extends JDialog {
         lblTotal.setForeground(COLOR_MORADO_BASE);
 
         // Botón pagar
-        btnPagar = crearBoton("Proceder al pago →", !cliente.getCarrito().isEmpty());
+        btnPagar = crearBoton("Proceder al pago", !cliente.getCarrito().isEmpty());
         btnPagar.addActionListener(e -> abrirPago());
 
         // Botón vaciar
@@ -120,9 +120,7 @@ public class CarritoDialog extends JDialog {
         btnVaciar.setContentAreaFilled(false);
         btnVaciar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnVaciar.addActionListener(e -> {
-            int r = JOptionPane.showConfirmDialog(this,
-                "¿Seguro que quieres vaciar el carrito?",
-                "Confirmar", JOptionPane.YES_NO_OPTION);
+            int r = JOptionPane.showConfirmDialog(this, "¿Seguro que quieres vaciar el carrito?", "Confirmar", JOptionPane.YES_NO_OPTION);
             if (r == JOptionPane.YES_OPTION) {
                 cliente.limpiarCarrito();
                 ventana.actualizarContadorCarrito();
@@ -216,7 +214,6 @@ public class CarritoDialog extends JDialog {
         return item;
     }
 
-    // ─── Refrescar tras cambios ───────────────────────────────────
     private void refrescar() {
         poblarItems();
         double total = calcularTotal();
@@ -226,7 +223,7 @@ public class CarritoDialog extends JDialog {
             btnPagar.setEnabled(!cliente.getCarrito().isEmpty());
     }
 
-    // ─── Abrir diálogo de pago ────────────────────────────────────
+    // abrir dialogo de pago
     private void abrirPago() {
         PagoDialog pago = new PagoDialog(
             (Frame) getOwner(), cliente, gestion, gestionVentas, ventana);
@@ -234,7 +231,7 @@ public class CarritoDialog extends JDialog {
         pago.setVisible(true);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────
+    
     private double calcularTotal() {
         return cliente.getCarrito().stream()
             .mapToDouble(Producto::getPrecioEfectivo).sum();

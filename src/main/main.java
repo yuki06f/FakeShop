@@ -1,6 +1,7 @@
 package main;
 
 import modelo.GestionTienda;
+import modelo.GestionVentas;
 
 public class main {
     public static void main(String[] args) {
@@ -10,13 +11,14 @@ public class main {
 
         javax.swing.SwingUtilities.invokeLater(() -> {
             GestionTienda gestion = new GestionTienda();
+            GestionVentas gestionV = new GestionVentas();
 
             if (gestion.getListaProductos().isEmpty()) {
                 cargarProductosDePrueba(gestion);
             }
 
             // pasar al gestor como parametro
-            gui.VentanaPrincipal vp = new gui.VentanaPrincipal(gestion);
+            gui.VentanaPrincipal vp = new gui.VentanaPrincipal(gestion, gestionV);
             vp.setVisible(true);
 
             
