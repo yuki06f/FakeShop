@@ -1,0 +1,27 @@
+╔══════════════════════════════════════════╗
+║     TIENDAMAX — REPORTE DE VENTAS        ║
+╚══════════════════════════════════════════╝
+Categoría filtrada : Todas
+Fecha del reporte  : 07/06/2026 22:22
+Total de ventas    : 3
+Ingresos totales   : $2,264.05
+──────────────────────────────────────────
+Folio   : TM-1780674554105
+Cliente : ola
+Fecha   : 05/06/2026 09:49
+Total   : $854.05
+Estado  : Pendiente de pago
+──────────────────────────────────────────
+Folio   : TM-1780702607385
+Cliente : persona1
+Fecha   : 05/06/2026 17:36
+Total   : $450.00
+Estado  : Preparando envío
+──────────────────────────────────────────
+Folio   : AF-1780709970038
+Cliente : ola
+Fecha   : 05/06/2026 19:39
+Total   : $960.00
+Estado  : Preparando envío
+──────────────────────────────────────────
+FIN DEL REPORTE

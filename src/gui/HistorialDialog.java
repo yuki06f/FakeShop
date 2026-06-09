@@ -1,289 +1,149 @@
 package gui;
 
-import modelo.Cliente;
-import modelo.GestionVentas;
-import modelo.Producto;
-import modelo.Venta;
+public class HistorialDialog extends javax.swing.JDialog {
+    
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HistorialDialog.class.getName());
 
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
+    public HistorialDialog(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+    }
+    private modelo.Cliente cliente;
+    private modelo.GestionVentas gestionVentas;
 
-public class HistorialDialog extends JDialog {
-
-    private final Color COLOR_MORADO_OSCURO = new Color(40, 15, 45);
-    private final Color COLOR_MORADO_BASE   = new Color(65, 20, 60);
-    private final Color COLOR_NARANJA       = new Color(225, 120, 80);
-    private final Color COLOR_FONDO         = new Color(248, 246, 250);
-    private final Color COLOR_BLANCO        = Color.WHITE;
-    private final Color COLOR_TEXTO         = new Color(50, 20, 50);
-    private final Color COLOR_GRIS          = new Color(120, 110, 130);
-    private final Color COLOR_VERDE         = new Color(30, 140, 70);
-
-    private Cliente       cliente;
-    private GestionVentas gestionVentas;
-
-    public HistorialDialog(Frame parent, Cliente cliente,GestionVentas gestionVentas) {
-        super(parent, "Mis pedidos", true);
-        this.cliente       = cliente;
+    public HistorialDialog(java.awt.Frame parent, modelo.Cliente cliente, modelo.GestionVentas gestionVentas) {
+        super(parent, true);
+        this.cliente = cliente;
         this.gestionVentas = gestionVentas;
-
-        setSize(600, 640);
-        setResizable(false);
+        
+        initComponents();
         setLocationRelativeTo(parent);
-        construirUI();
-    }
-
-   private void construirUI() {
-        JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(COLOR_FONDO);
-        root.add(crearHeader(), BorderLayout.NORTH);
-        root.add(crearCuerpo(), BorderLayout.CENTER);
-        setContentPane(root);
-    }
-
-    private JPanel crearHeader() {
-        JPanel h = new JPanel(new BorderLayout());
-        h.setBackground(COLOR_MORADO_OSCURO);
-        h.setBorder(new EmptyBorder(16, 24, 16, 24));
-
-        JLabel titulo = new JLabel("Mis pedidos");
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        titulo.setForeground(Color.WHITE);
-
-        ArrayList<Venta> ventas = gestionVentas.getVentasDeCliente(cliente.getId());
-        JLabel contador = new JLabel(ventas.size() + " pedido(s)");
-        contador.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        contador.setForeground(new Color(200, 185, 210));
-
-        JLabel cerrar = new JLabel("✕");
-        cerrar.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        cerrar.setForeground(new Color(200, 180, 210));
-        cerrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        cerrar.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { dispose(); }
-            public void mouseEntered(MouseEvent e) { cerrar.setForeground(COLOR_NARANJA); }
-            public void mouseExited(MouseEvent e)  { cerrar.setForeground(new Color(200,180,210)); }
+        
+        lblCerrar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) { dispose(); }
         });
-
-        JPanel izq = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        izq.setOpaque(false);
-        izq.add(titulo);
-        izq.add(Box.createHorizontalStrut(16));
-        izq.add(contador);
-
-        h.add(izq,    BorderLayout.WEST);
-        h.add(cerrar, BorderLayout.EAST);
-        return h;
+        
+        poblarHistorial();
     }
 
-    private JScrollPane crearCuerpo() {
-        JPanel cuerpo = new JPanel();
-        cuerpo.setLayout(new BoxLayout(cuerpo, BoxLayout.Y_AXIS));
-        cuerpo.setBackground(COLOR_FONDO);
-        cuerpo.setBorder(new EmptyBorder(20, 24, 20, 24));
+    private void poblarHistorial() {
+        panelVentas.removeAll();
+        java.util.ArrayList<modelo.Venta> ventas = gestionVentas.getVentasDeCliente(cliente.getId());
 
-        ArrayList<Venta> ventas = gestionVentas.getVentasDeCliente(cliente.getId());
-
+        System.out.println("Ventas encontradas para este cliente: " + ventas.size());
         if (ventas.isEmpty()) {
-            // Estado vacío
-
-            JLabel msg = new JLabel("Aún no has realizado ningún pedido");
-            msg.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            msg.setForeground(COLOR_GRIS);
-            msg.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            cuerpo.add(Box.createVerticalStrut(60));
-            cuerpo.add(Box.createVerticalStrut(12));
-            cuerpo.add(msg);
+            javax.swing.JLabel msg = new javax.swing.JLabel("Aún no has realizado ningún pedido");
+            msg.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+            msg.setForeground(new java.awt.Color(120, 110, 130));
+            msg.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+            panelVentas.add(javax.swing.Box.createVerticalStrut(60));
+            panelVentas.add(msg);
         } else {
-            // Mostrar del más reciente al más antiguo
             for (int i = ventas.size() - 1; i >= 0; i--) {
-                cuerpo.add(crearTarjetaVenta(ventas.get(i)));
-                cuerpo.add(Box.createVerticalStrut(16));
+                ItemVenta item = new ItemVenta();
+                item.setDatos(ventas.get(i));
+                
+                javax.swing.JPanel wrapper = new javax.swing.JPanel(new java.awt.BorderLayout());
+                wrapper.setOpaque(false);
+                wrapper.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                wrapper.setMaximumSize(new java.awt.Dimension(32767, 300));
+                
+                wrapper.add(item, java.awt.BorderLayout.CENTER);
+                
+                panelVentas.add(wrapper);
             }
         }
-
-        JScrollPane scroll = new JScrollPane(cuerpo);
-        scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(14);
-        return scroll;
+        panelVentas.revalidate();
+        panelVentas.repaint();
     }
 
-    private JPanel crearTarjetaVenta(Venta v) {
-        JPanel card = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-                // Sombra
-                g2.setColor(new Color(0,0,0,15));
-                g2.fill(new RoundRectangle2D.Double(3,3,
-                    getWidth()-3,getHeight()-3,16,16));
-                // Fondo
-                g2.setColor(COLOR_BLANCO);
-                g2.fill(new RoundRectangle2D.Double(0,0,
-                    getWidth()-5,getHeight()-5,16,16));
-                g2.dispose();
-            }
-        };
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setOpaque(false);
-        card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 999));
-        card.setBorder(new EmptyBorder(16, 20, 16, 20));
+    
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-        //
-        JPanel filaSup = new JPanel(new BorderLayout());
-        filaSup.setOpaque(false);
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        lblCerrar = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        panelVentas = new javax.swing.JPanel();
 
-        JLabel lblFolio = new JLabel(v.getFolio());
-        lblFolio.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        lblFolio.setForeground(COLOR_MORADO_BASE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBackground(new java.awt.Color(248, 246, 250));
+        setMaximumSize(new java.awt.Dimension(600, 640));
+        setMinimumSize(new java.awt.Dimension(600, 640));
+        setPreferredSize(new java.awt.Dimension(600, 640));
+        setResizable(false);
 
-        JLabel lblFecha = new JLabel(v.getFechaFormateada());
-        lblFecha.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        lblFecha.setForeground(COLOR_GRIS);
+        jPanel1.setBackground(new java.awt.Color(40, 15, 45));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        jPanel1.setPreferredSize(new java.awt.Dimension(600, 60));
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
-        JLabel lblTotal = new JLabel("$" + String.format("%,.2f", v.getTotal()));
-        lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        lblTotal.setForeground(COLOR_TEXTO);
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Mis Pedidos");
+        jPanel1.add(jLabel1, java.awt.BorderLayout.WEST);
 
-        JPanel izq = new JPanel();
-        izq.setLayout(new BoxLayout(izq, BoxLayout.Y_AXIS));
-        izq.setOpaque(false);
-        izq.add(lblFolio);
-        izq.add(Box.createVerticalStrut(2));
-        izq.add(lblFecha);
+        lblCerrar.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblCerrar.setForeground(new java.awt.Color(255, 255, 255));
+        lblCerrar.setText("X");
+        lblCerrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel1.add(lblCerrar, java.awt.BorderLayout.EAST);
 
-        filaSup.add(izq,BorderLayout.WEST);
-        filaSup.add(lblTotal, BorderLayout.EAST);
-        card.add(filaSup);
-        card.add(Box.createVerticalStrut(12));
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        for (Producto p : v.getProductos()) {
-            JPanel filaProd = new JPanel(new BorderLayout());
-            filaProd.setOpaque(false);
-            filaProd.setMaximumSize(new Dimension(Integer.MAX_VALUE, 24));
+        jScrollPane1.setBorder(null);
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-            JLabel nomProd = new JLabel("• " + p.getNombre());
-            nomProd.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-            nomProd.setForeground(COLOR_TEXTO);
+        panelVentas.setBackground(new java.awt.Color(248, 246, 250));
+        panelVentas.setLayout(new javax.swing.BoxLayout(panelVentas, javax.swing.BoxLayout.Y_AXIS));
+        jScrollPane1.setViewportView(panelVentas);
 
-            JLabel precProd = new JLabel("$" + String.format("%,.2f",
-                p.getPrecioEfectivo()));
-            precProd.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-            precProd.setForeground(COLOR_GRIS);
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-            filaProd.add(nomProd,  BorderLayout.WEST);
-            filaProd.add(precProd, BorderLayout.EAST);
-            card.add(filaProd);
-            card.add(Box.createVerticalStrut(3));
-        }
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
-        card.add(Box.createVerticalStrut(14));
-
-        JLabel lblMetodo = new JLabel(v.getMetodoPago().equals("EFECTIVO") ? "Efectivo (OXXO)  —  Ref: " + v.getReferenciaPago() : "Tarjeta  terminación: " + v.getReferenciaPago().substring( Math.max(0, v.getReferenciaPago().length()-4)));
-        lblMetodo.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        lblMetodo.setForeground(COLOR_GRIS);
-        lblMetodo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.add(lblMetodo);
-        card.add(Box.createVerticalStrut(14));
-
-        card.add(crearBarraSeguimiento(v.getEstado()));
-
-        return card;
-    }
-
-    private JPanel crearBarraSeguimiento(Venta.Estado estadoActual) {
-        Venta.Estado[] etapas = Venta.Estado.values();
-        int idxActual = estadoActual.ordinal();
-
-        JPanel barra = new JPanel(new GridLayout(1, etapas.length, 0, 0));
-        barra.setOpaque(false);
-        barra.setMaximumSize(new Dimension(Integer.MAX_VALUE, 56));
-        barra.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        for (int i = 0; i < etapas.length; i++) {
-            barra.add(crearEtapa(etapas[i], i, idxActual));
-        }
-
-        return barra;
-    }
-
-    private JPanel crearEtapa(Venta.Estado etapa, int idx, int idxActual) {
-        JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-        p.setOpaque(false);
-
-        boolean completado = idx <= idxActual;
-        boolean activo     = idx == idxActual;
-
-        // Círculo indicador
-        JLabel circulo = new JLabel(completado ? "●" : "○", SwingConstants.CENTER) {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-                int d = 18;
-                int x = (getWidth()-d)/2;
-                int y = 2;
-                if (activo) {
-                    // Círculo degradado para el estado actual
-                    g2.setPaint(new GradientPaint(
-                        x,y,COLOR_MORADO_BASE, x+d,y,COLOR_NARANJA));
-                    g2.fillOval(x, y, d, d);
-                    g2.setColor(Color.WHITE);
-                    g2.setFont(new Font("Segoe UI", Font.BOLD, 10));
-                    FontMetrics fm = g2.getFontMetrics();
-                    g2.drawString("✔", x+(d-fm.stringWidth("✔"))/2,
-                        y+d-fm.getDescent()-2);
-                } else if (completado) {
-                    g2.setColor(new Color(160, 200, 160));
-                    g2.fillOval(x, y, d, d);
-                    g2.setColor(Color.WHITE);
-                    g2.setFont(new Font("Segoe UI", Font.BOLD, 10));
-                    FontMetrics fm = g2.getFontMetrics();
-                    g2.drawString("✔", x+(d-fm.stringWidth("✔"))/2,
-                        y+d-fm.getDescent()-2);
-                } else {
-                    g2.setColor(new Color(210, 205, 220));
-                    g2.fillOval(x, y, d, d);
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
                 }
-                // Línea conectora (no en el último)
-                if (idx < Venta.Estado.values().length - 1) {
-                    g2.setColor(completado
-                        ? new Color(160, 200, 160)
-                        : new Color(210, 205, 220));
-                    g2.setStroke(new BasicStroke(2));
-                    g2.drawLine(x+d, y+d/2, getWidth(), y+d/2);
-                }
-                g2.dispose();
             }
-        };
-        circulo.setPreferredSize(new Dimension(0, 24));
-        circulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
 
-        // Etiqueta de texto
-        // Acortar el texto para que quepa
-        String textoCorto = etapa.getEtiqueta().replace("Pendiente de pago", "Pendiente")
-            .replace("Pago confirmado",   "Pagado")
-            .replace("Preparando envío",  "Preparando")
-            .replace("En camino",         "En camino")
-            .replace("Entregado",         "Entregado");
-
-        JLabel texto = new JLabel(textoCorto, SwingConstants.CENTER);
-        texto.setFont(new Font("Segoe UI", activo ? Font.BOLD : Font.PLAIN, 9));
-        texto.setForeground(activo ? COLOR_MORADO_BASE
-            : completado ? COLOR_VERDE : COLOR_GRIS);
-        texto.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        p.add(circulo);
-        p.add(Box.createVerticalStrut(4));
-        p.add(texto);
-        return p;
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                HistorialDialog dialog = new HistorialDialog(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
     }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblCerrar;
+    private javax.swing.JPanel panelVentas;
+    // End of variables declaration//GEN-END:variables
 }

@@ -32,6 +32,15 @@ public class Producto implements Serializable {
     }
 
     // Getters y Setters
+    
+    public void setNombre(String n) { nombre = n; }
+    public void setCategoria (String c) { categoria = c;}
+    public void setPrecio (double p) { precio = p;}
+    public void setDescuento (boolean d) { descuento = d;}
+    public void setPorcentajeDescuento (double d) { porcentajeDescuento = d;}
+    
+    
+    
     public String getId() { return id; }
     public String getNombre() { return nombre; }
     public double getPrecio() { return precio; }

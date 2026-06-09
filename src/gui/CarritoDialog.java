@@ -1,270 +1,260 @@
 package gui;
 
-import modelo.Cliente;
 import modelo.GestionTienda;
 import modelo.GestionVentas;
+import gui.VentanaPrincipal;
+import modelo.Cliente;
+
+import java.util.ArrayList;
 import modelo.Producto;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
+public class CarritoDialog extends javax.swing.JDialog {
+    
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CarritoDialog.class.getName());
 
-public class CarritoDialog extends JDialog {
-    private final Color COLOR_MORADO_OSCURO = new Color(40, 15, 45);
-    private final Color COLOR_MORADO_BASE   = new Color(65, 20, 60);
-    private final Color COLOR_NARANJA       = new Color(225, 120, 80);
-    private final Color COLOR_FONDO         = new Color(248, 246, 250);
-    private final Color COLOR_BLANCO        = Color.WHITE;
-    private final Color COLOR_TEXTO         = new Color(50, 20, 50);
-    private final Color COLOR_GRIS          = new Color(120, 110, 130);
-
-    private Cliente         cliente;
-    private GestionTienda   gestion;
-    private GestionVentas   gestionVentas;
-    private VentanaPrincipal ventana;
-
-    private JPanel   panelItems;
-    private JLabel   lblTotal;
-    private JButton  btnPagar;
-
-    public CarritoDialog(VentanaPrincipal parent, Cliente cliente, GestionTienda gestion, GestionVentas gestionVentas) {
-        super(parent, "Mi carrito", true);
-        this.ventana       = parent;
-        this.cliente       = cliente;
-        this.gestion       = gestion;
-        this.gestionVentas = gestionVentas;
-
-        setSize(520, 620);
-        setResizable(false);
+    public CarritoDialog(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+    }
+    
+    private modelo.Cliente cliente;
+    private modelo.GestionTienda gestion;
+    private modelo.GestionVentas gestionV;
+    private VentanaPrincipal ventanaParent;
+    
+    public CarritoDialog(VentanaPrincipal parent, Cliente cliente, GestionTienda gestion, GestionVentas gestionV){
+        super(parent, true); //para que modal sea true
+        this.ventanaParent = parent;
+        this.cliente = cliente;
+        this.gestion = gestion;
+        this.gestionV = gestionV;
+        
+        initComponents();
+        
         setLocationRelativeTo(parent);
-        setBackground(COLOR_FONDO);
-
-        construirUI();
-    }
-
-    private void construirUI() {
-        JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(COLOR_FONDO);
-
-        root.add(crearHeader(),  BorderLayout.NORTH);
-        root.add(crearCuerpo(),  BorderLayout.CENTER);
-        root.add(crearFooter(),  BorderLayout.SOUTH);
-
-        setContentPane(root);
-    }
-
-    private JPanel crearHeader() {
-        JPanel h = new JPanel(new BorderLayout());
-        h.setBackground(COLOR_MORADO_OSCURO);
-        h.setBorder(new EmptyBorder(16, 24, 16, 24));
-
-        JLabel titulo = new JLabel("Mi carrito");
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        titulo.setForeground(COLOR_BLANCO);
-
-        JLabel cerrar = new JLabel("✕");
-        cerrar.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        cerrar.setForeground(new Color(200, 180, 210));
-        cerrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        cerrar.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { dispose(); }
-            public void mouseEntered(MouseEvent e) { cerrar.setForeground(COLOR_NARANJA); }
-            public void mouseExited(MouseEvent e)  { cerrar.setForeground(new Color(200,180,210)); }
-        });
-
-        h.add(titulo, BorderLayout.WEST);
-        h.add(cerrar, BorderLayout.EAST);
-        return h;
-    }
-
-    private JScrollPane crearCuerpo() {
-        panelItems = new JPanel();
-        panelItems.setLayout(new BoxLayout(panelItems, BoxLayout.Y_AXIS));
-        panelItems.setBackground(COLOR_FONDO);
-        panelItems.setBorder(new EmptyBorder(16, 20, 16, 20));
-
+        
+        vacio.setVisible(false);
+        
         poblarItems();
-
-        JScrollPane scroll = new JScrollPane(panelItems);
-        scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(12);
-        return scroll;
+        
     }
 
-    private JPanel crearFooter() {
-        JPanel footer = new JPanel(new BorderLayout());
-        footer.setBackground(COLOR_BLANCO);
-        footer.setBorder(BorderFactory.createCompoundBorder(
-            new MatteBorder(1, 0, 0, 0, new Color(220, 215, 230)),
-            new EmptyBorder(16, 24, 20, 24)
-        ));
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-        // Total
-        double total = calcularTotal();
-        lblTotal = new JLabel("Total:  $" + String.format("%,.2f", total));
-        lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTotal.setForeground(COLOR_MORADO_BASE);
+        header = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        footer = new javax.swing.JPanel();
+        lblTotal = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        btnVaciar = new javax.swing.JButton();
+        btnPagar = new gui.botonGradiente();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        panelItems = new javax.swing.JPanel();
+        vacio = new javax.swing.JLabel();
 
-        // Botón pagar
-        btnPagar = crearBoton("Proceder al pago", !cliente.getCarrito().isEmpty());
-        btnPagar.addActionListener(e -> abrirPago());
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBackground(new java.awt.Color(248, 246, 250));
+        setMaximumSize(new java.awt.Dimension(540, 620));
+        setMinimumSize(new java.awt.Dimension(540, 620));
+        setPreferredSize(new java.awt.Dimension(520, 620));
+        setResizable(false);
 
-        // Botón vaciar
-        JButton btnVaciar = new JButton("Vaciar carrito");
-        btnVaciar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        btnVaciar.setForeground(COLOR_GRIS);
+        header.setBackground(new java.awt.Color(40, 15, 45));
+        header.setPreferredSize(new java.awt.Dimension(520, 60));
+
+        jLabel1.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Mi Carrito");
+
+        javax.swing.GroupLayout headerLayout = new javax.swing.GroupLayout(header);
+        header.setLayout(headerLayout);
+        headerLayout.setHorizontalGroup(
+            headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(headerLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(jLabel1)
+                .addContainerGap(431, Short.MAX_VALUE))
+        );
+        headerLayout.setVerticalGroup(
+            headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(headerLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jLabel1)
+                .addContainerGap(17, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(header, java.awt.BorderLayout.PAGE_START);
+
+        footer.setBackground(new java.awt.Color(255, 255, 255));
+        footer.setPreferredSize(new java.awt.Dimension(520, 80));
+
+        lblTotal.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        lblTotal.setForeground(new java.awt.Color(65, 20, 60));
+        lblTotal.setText("Total: $0.00");
+        lblTotal.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 20));
+        lblTotal.setMaximumSize(new java.awt.Dimension(146, 50));
+        lblTotal.setMinimumSize(new java.awt.Dimension(146, 50));
+        lblTotal.setPreferredSize(new java.awt.Dimension(136, 50));
+
+        jPanel3.setMinimumSize(new java.awt.Dimension(343, 30));
+        jPanel3.setOpaque(false);
+        jPanel3.setPreferredSize(new java.awt.Dimension(384, 30));
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btnVaciar.setText("Vaciar Carrito");
         btnVaciar.setBorderPainted(false);
-        btnVaciar.setContentAreaFilled(false);
-        btnVaciar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnVaciar.addActionListener(e -> {
-            int r = JOptionPane.showConfirmDialog(this, "¿Seguro que quieres vaciar el carrito?", "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (r == JOptionPane.YES_OPTION) {
-                cliente.limpiarCarrito();
-                ventana.actualizarContadorCarrito();
-                refrescar();
-            }
-        });
+        btnVaciar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVaciar.addActionListener(this::btnVaciarActionPerformed);
+        jPanel3.add(btnVaciar, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 30, -1, -1));
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
-        panelBotones.setOpaque(false);
-        panelBotones.add(btnVaciar);
-        panelBotones.add(btnPagar);
+        btnPagar.setText("Proceder al pago");
+        btnPagar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnPagar.addActionListener(this::btnPagarActionPerformed);
+        jPanel3.add(btnPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 20, 116, 37));
 
-        footer.add(lblTotal,      BorderLayout.WEST);
-        footer.add(panelBotones,  BorderLayout.EAST);
-        return footer;
-    }
+        javax.swing.GroupLayout footerLayout = new javax.swing.GroupLayout(footer);
+        footer.setLayout(footerLayout);
+        footerLayout.setHorizontalGroup(
+            footerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(footerLayout.createSequentialGroup()
+                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 332, Short.MAX_VALUE))
+        );
+        footerLayout.setVerticalGroup(
+            footerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        getContentPane().add(footer, java.awt.BorderLayout.PAGE_END);
+
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        panelItems.setBackground(new java.awt.Color(248, 246, 250));
+        panelItems.setLayout(new javax.swing.BoxLayout(panelItems, javax.swing.BoxLayout.Y_AXIS));
+
+        vacio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        vacio.setForeground(new java.awt.Color(120, 110, 130));
+        vacio.setText("Tu Carrito está vacío");
+        vacio.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panelItems.add(vacio);
+
+        jScrollPane1.setViewportView(panelItems);
+
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnVaciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVaciarActionPerformed
+        int r = javax.swing.JOptionPane.showConfirmDialog(this,"¿seguro que quieres vaciar el carrito?", "confirmar", javax.swing.JOptionPane.YES_NO_OPTION );
+       if (r == javax.swing.JOptionPane.YES_OPTION) {
+           cliente.limpiarCarrito();
+           ventanaParent.actualizarContadorCarrito();
+           poblarItems();
+       }
+    }//GEN-LAST:event_btnVaciarActionPerformed
+
+    private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
+       PagoDialog pago =  new PagoDialog(ventanaParent, cliente, gestion, gestionV, ventanaParent);
+       dispose();
+       pago.setVisible(true);
+       
+       poblarItems();
+    }//GEN-LAST:event_btnPagarActionPerformed
 
     
-    private void poblarItems() {
+    public void poblarItems(){
         panelItems.removeAll();
-        ArrayList<Producto> carrito = cliente.getCarrito();
-
-        if (carrito.isEmpty()) {
-            JLabel vacio = new JLabel("Tu carrito está vacío.");
-            vacio.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            vacio.setForeground(COLOR_GRIS);
-            vacio.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelItems.add(Box.createVerticalStrut(40));
+        ArrayList<Producto> carrito =  cliente.getCarrito();
+        
+        if(carrito.isEmpty()){
+            //mostrar etiqueta de vacio
+            panelItems.add(javax.swing.Box.createVerticalStrut(40));
             panelItems.add(vacio);
-        } else {
-            for (int i = 0; i < carrito.size(); i++) {
-                panelItems.add(crearItemCarrito(carrito.get(i), i));
-                panelItems.add(Box.createVerticalStrut(10));
+            vacio.setVisible(true);
+            
+        }else{
+            for (int i = 0; i < carrito.size(); i++){
+                final int index = i;
+                Producto p = carrito.get(i);
+                
+                //añadirle la informcaion al carrito
+                ItemCarrito item = new ItemCarrito();
+                item.setDatos(p);
+                item.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+                
+                item.getBtnEliminar().addMouseListener(new java.awt.event.MouseAdapter(){
+                    public void mouseClicked(java.awt.event.MouseEvent e){
+                        cliente.getCarrito().remove(index);
+                        ventanaParent.actualizarContadorCarrito();
+                        poblarItems();
+                    }
+                });
+                
+                panelItems.add(item);
+                panelItems.add(javax.swing.Box.createVerticalStrut(10)); //espacio
             }
         }
-
+        
+        actualizarTotal();
         panelItems.revalidate();
         panelItems.repaint();
     }
+    
+    private void actualizarTotal(){
+        double total = cliente.getCarrito().stream().mapToDouble(Producto::getPrecioEfectivo).sum();
+        lblTotal.setText("total: $" + String.format("%, .2f", total));
+        btnPagar.setEnabled(!cliente.getCarrito().isEmpty());
+    }
+    
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
 
-    private JPanel crearItemCarrito(Producto p, int index) {
-        JPanel item = new JPanel(new BorderLayout(12, 0));
-        item.setBackground(COLOR_BLANCO);
-        item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
-        item.setBorder(BorderFactory.createCompoundBorder(
-            new LineBorder(new Color(230, 225, 240), 1, true),
-            new EmptyBorder(12, 16, 12, 16)
-        ));
-
-        // Ícono
-
-        // Info
-        JPanel info = new JPanel();
-        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-        info.setOpaque(false);
-
-        JLabel nombre = new JLabel(p.getNombre());
-        nombre.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        nombre.setForeground(COLOR_TEXTO);
-
-        JLabel cat = new JLabel(p.getCategoria());
-        cat.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        cat.setForeground(COLOR_GRIS);
-
-        JLabel precio = new JLabel("$" + String.format("%,.2f", p.getPrecioEfectivo()));
-        precio.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        precio.setForeground(COLOR_MORADO_BASE);
-
-        info.add(nombre);
-        info.add(Box.createVerticalStrut(2));
-        info.add(cat);
-        info.add(Box.createVerticalStrut(4));
-        info.add(precio);
-
-        // Botón eliminar
-        JLabel btnEliminar = new JLabel("🗑");
-        btnEliminar.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        btnEliminar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnEliminar.setToolTipText("Eliminar del carrito");
-        btnEliminar.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                cliente.getCarrito().remove(index);
-                ventana.actualizarContadorCarrito();
-                refrescar();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                CarritoDialog dialog = new CarritoDialog(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
-
-        item.add(info,        BorderLayout.CENTER);
-        item.add(btnEliminar, BorderLayout.EAST);
-
-        return item;
     }
 
-    private void refrescar() {
-        poblarItems();
-        double total = calcularTotal();
-        if (lblTotal != null)
-            lblTotal.setText("Total:  $" + String.format("%,.2f", total));
-        if (btnPagar != null)
-            btnPagar.setEnabled(!cliente.getCarrito().isEmpty());
-    }
-
-    // abrir dialogo de pago
-    private void abrirPago() {
-        PagoDialog pago = new PagoDialog(
-            (Frame) getOwner(), cliente, gestion, gestionVentas, ventana);
-        dispose(); // cierra el carrito
-        pago.setVisible(true);
-    }
-
-    
-    private double calcularTotal() {
-        return cliente.getCarrito().stream()
-            .mapToDouble(Producto::getPrecioEfectivo).sum();
-    }
-
-    private JButton crearBoton(String texto, boolean habilitado) {
-        JButton btn = new JButton(texto) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON);
-                Color c1 = isEnabled() ? COLOR_MORADO_BASE : new Color(180,170,190);
-                Color c2 = isEnabled() ? COLOR_NARANJA     : new Color(190,185,195);
-                g2.setPaint(new GradientPaint(0,0,c1,getWidth(),0,c2));
-                g2.fill(new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),12,12));
-                g2.setColor(Color.WHITE);
-                g2.setFont(getFont());
-                FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(getText(),
-                    (getWidth()-fm.stringWidth(getText()))/2,
-                    (getHeight()+fm.getAscent()-fm.getDescent())/2);
-                g2.dispose();
-            }
-        };
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btn.setOpaque(false);
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setPreferredSize(new Dimension(180, 42));
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setEnabled(habilitado);
-        return btn;
-    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private gui.botonGradiente btnPagar;
+    private javax.swing.JButton btnVaciar;
+    private javax.swing.JPanel footer;
+    private javax.swing.JPanel header;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JPanel panelItems;
+    private javax.swing.JLabel vacio;
+    // End of variables declaration//GEN-END:variables
 }

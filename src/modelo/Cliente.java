@@ -25,6 +25,9 @@ public class Cliente extends Usuario {
     public void limpiarCarrito() { this.carrito.clear(); }
     
     // Getters y Setters
+    public String getContraseña() { return getPassword(); }
+    public void setContraseña(String p) { setPassword(p); }
+    
     public String getDomicilio() { return domicilio; }
     public void setDomicilio(String domicilio) { this.domicilio = domicilio; }
     public ArrayList<Producto> getCarrito() { return carrito; }

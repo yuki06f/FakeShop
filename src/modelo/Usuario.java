@@ -35,4 +35,5 @@ public abstract class Usuario implements Serializable {
 
     public boolean esAdmin() { return esAdmin; }
     public void setAdmin(boolean esAdmin) { this.esAdmin = esAdmin; }
+    
 }
