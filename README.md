@@ -29,5 +29,5 @@ para que el programa se ejecute correctamente, se necesita contar con Java JDK i
 # AUTORES
 
 Proyecto desarrollado con fines academicos.
-Hector Guerrero Villa
-Maria Fernanda 
+Héctor Guerrero Villa 300513
+Maria Fernanda Hernández Perez Peña 594037
